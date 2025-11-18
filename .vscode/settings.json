@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>爱的天气提醒 - 每日为TA送上温馨关怀</title>
+  <!-- Tailwind CSS v3 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <!-- 统一的 Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#ff6b8b',
+            secondary: '#82c3ec',
+            tertiary: '#ffd1da',
+            dark: '#2c3e50',
+            light: '#f8f9fa'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 3s ease-in-out infinite',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'bounce-slow': 'bounce 3s infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-10px)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .text-shadow {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+      }
+      .text-shadow-lg {
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.3);
+      }
+      .bg-blur {
+        backdrop-filter: blur(8px);
+      }
+      .transition-all-300 {
+        transition: all 0.3s ease;
+      }
+      .glass-effect {
+        background: rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    }
+  </style>
+  <style>
+    body {
+      background-image: url('https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/4e66a5cc16194e25abcb5744b314aedf~tplv-a9rns2rl98-image.image?rcl=202511181647376671A82AB74E4BE87970&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766047688&x-signature=pDZlOURwrYBmDXiaDM4gs1j5bsA%3D');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+    
+    .heart {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6b8b;
+      transform: rotate(45deg);
+      animation: float 3s ease-in-out infinite;
+      opacity: 0.7;
+    }
+    
+    .heart:before,
+    .heart:after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: #ff6b8b;
+      border-radius: 50%;
+    }
+    
+    .heart:before {
+      top: -10px;
+      left: 0;
+    }
+    
+    .heart:after {
+      top: 0;
+      left: -10px;
+    }
+    
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(45deg);
+      }
+      50% {
+        transform: translateY(-10px) rotate(45deg);
+      }
+    }
+    
+    .weather-icon {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(255, 107, 139, 0.5);
+      border-radius: 10px;
+    }
+    
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 107, 139, 0.8);
+    }
+    
+    .emotion-wave {
+      position: relative;
+      height: 20px;
+      overflow: hidden;
+    }
+    
+    .emotion-wave span {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background-color: #ff6b8b;
+      border-radius: 50%;
+      animation: wave 2s infinite ease-in-out;
+      opacity: 0.7;
+    }
+    
+    @keyframes wave {
+      0%, 100% {
+        transform: translateY(0);
+      }
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+  </style>
+</head>
+<body class="font-sans text-dark">
+  <!-- 生成随机漂浮的心形 -->
+  <div id="hearts-container" class="fixed inset-0 pointer-events-none overflow-hidden"></div>
+  
+  <!-- 导航栏 -->
+  <nav class="bg-white bg-opacity-80 backdrop-blur-md shadow-md sticky top-0 z-50">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-heart text-primary text-2xl animate-pulse-slow"></i>
+        <h1 class="text-xl md:text-2xl font-bold bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">爱的天气提醒</h1>
+      </div>
+      <div class="hidden md:flex items-center space-x-6">
+        <a href="#" class="nav-link active" data-tab="home">首页</a>
+        <a href="#" class="nav-link" data-tab="weather">天气提醒</a>
+        <a href="#" class="nav-link" data-tab="birthday">生日祝福</a>
+        <a href="#" class="nav-link" data-tab="emotion">情感指数</a>
+        <a href="#" class="nav-link" data-tab="settings">设置</a>
+      </div>
+      <div class="md:hidden">
+        <button id="mobile-menu-button" class="text-dark focus:outline-none">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white bg-opacity-95 backdrop-blur-md shadow-lg">
+      <div class="container mx-auto px-4 py-2 flex flex-col space-y-3">
+        <a href="#" class="nav-link active py-2" data-tab="home">首页</a>
+        <a href="#" class="nav-link py-2" data-tab="weather">天气提醒</a>
+        <a href="#" class="nav-link py-2" data-tab="birthday">生日祝福</a>
+        <a href="#" class="nav-link py-2" data-tab="emotion">情感指数</a>
+        <a href="#" class="nav-link py-2" data-tab="settings">设置</a>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- 首页 -->
+    <section id="home" class="tab-content active">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-8 mb-12">
+        <div class="md:w-1/2 text-center md:text-left">
+          <h2 class="text-3xl md:text-5xl font-bold mb-4 text-shadow-lg">
+            <span class="bg-gradient-to-r from-primary to-secondary text-transparent bg-clip-text">每日</span>
+            <span class="block mt-2">为TA送上</span>
+            <span class="block mt-2">温馨关怀</span>
+          </h2>
+          <p class="text-lg md:text-xl mb-8 text-gray-700 max-w-lg mx-auto md:mx-0">
+            自动发送天气提醒和生日祝福，让爱不再缺席，每一天都充满惊喜与温暖。
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+            <button class="btn-primary bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all-300 flex items-center justify-center">
+              <i class="fa fa-heart mr-2"></i> 开始使用
+            </button>
+            <button class="btn-secondary bg-white hover:bg-gray-100 text-primary font-bold py-3 px-6 rounded-full shadow-lg transform hover:scale-105 transition-all-300 flex items-center justify-center border border-primary">
+              <i class="fa fa-info-circle mr-2"></i> 了解更多
+            </button>
+          </div>
+        </div>
+        <div class="md:w-1/2">
+          <img src="https://p26-doubao-search-sign.byteimg.com/labis/image/332ac6da7f6453bd65302abe23264999~tplv-be4g95zd3a-image.jpeg?rk3s=542c0f93&x-expires=1779007667&x-signature=I%2FeLntd%2F0vHcaefo8319WXp1GU0%3D" alt="情侣温馨" class="rounded-2xl shadow-xl w-full max-w-md mx-auto animate-float">
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all-300">
+          <div class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <i class="fa fa-cloud text-primary text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-center">天气自动提醒</h3>
+          <p class="text-gray-700 text-center">
+            设置城市和时间，每天自动向TA的微信发送天气情况和温馨提示，让TA感受到你的关心。
+          </p>
+        </div>
+        
+        <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all-300">
+          <div class="w-16 h-16 bg-secondary bg-opacity-20 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <i class="fa fa-birthday-cake text-secondary text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-center">生日祝福</h3>
+          <p class="text-gray-700 text-center">
+            记录双方生日，系统会在特殊日子自动发送定制化祝福到TA的微信，给TA一个惊喜。
+          </p>
+        </div>
+        
+        <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-xl shadow-lg p-6 transform hover:scale-105 transition-all-300">
+          <div class="w-16 h-16 bg-tertiary bg-opacity-30 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <i class="fa fa-line-chart text-tertiary text-3xl"></i>
+          </div>
+          <h3 class="text-xl font-bold mb-3 text-center">情感指数分析</h3>
+          <p class="text-gray-700 text-center">
+            分析你们的互动频率和内容，生成情感连接强度报告，帮助你们更好地维护关系。
+          </p>
+        </div>
+      </div>
+      
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">如何使用</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+              <span class="text-primary font-bold text-xl">1</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">添加TA的信息</h3>
+            <p class="text-gray-700">
+              输入TA的姓名、微信和生日信息，建立你们的专属连接。
+            </p>
+          </div>
+          
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+              <span class="text-primary font-bold text-xl">2</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">设置提醒</h3>
+            <p class="text-gray-700">
+              选择天气提醒的城市和时间，以及生日祝福的方式和内容。
+            </p>
+          </div>
+          
+          <div class="flex flex-col items-center text-center">
+            <div class="w-16 h-16 bg-primary bg-opacity-20 rounded-full flex items-center justify-center mb-4">
+              <span class="text-primary font-bold text-xl">3</span>
+            </div>
+            <h3 class="text-xl font-bold mb-3">享受甜蜜互动</h3>
+            <p class="text-gray-700">
+              系统自动发送提醒和祝福，让爱无处不在，每一天都充满惊喜。
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 天气提醒 -->
+    <section id="weather" class="tab-content">
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">天气提醒设置</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">选择城市</h3>
+            <div class="mb-6">
+              <label for="city" class="block text-gray-700 mb-2">城市名称</label>
+              <div class="relative">
+                <input type="text" id="city" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入城市名称">
+                <button id="search-city" class="absolute right-3 top-3 text-primary">
+                  <i class="fa fa-search"></i>
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-gray-700 mb-2">选择联系人</label>
+              <div class="flex flex-wrap gap-3">
+                <div class="contact-item flex items-center bg-primary bg-opacity-10 px-4 py-2 rounded-full cursor-pointer">
+                  <input type="checkbox" id="contact-1" class="mr-2">
+                  <label for="contact-1">亲爱的</label>
+                </div>
+                <div class="contact-item flex items-center bg-gray-100 px-4 py-2 rounded-full cursor-pointer">
+                  <input type="checkbox" id="contact-2" class="mr-2">
+                  <label for="contact-2">宝贝</label>
+                </div>
+                <button id="add-contact" class="flex items-center bg-gray-100 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-200 transition-all-300">
+                  <i class="fa fa-plus mr-2"></i> 添加
+                </button>
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <label for="send-time" class="block text-gray-700 mb-2">发送时间</label>
+              <input type="time" id="send-time" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-gray-700 mb-2">提醒内容</label>
+              <div class="space-y-3">
+                <div class="flex items-center">
+                  <input type="checkbox" id="content-1" class="mr-2" checked>
+                  <label for="content-1">温度</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="content-2" class="mr-2" checked>
+                  <label for="content-2">天气状况</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="content-3" class="mr-2" checked>
+                  <label for="content-3">穿衣建议</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="content-4" class="mr-2">
+                  <label for="content-4">紫外线指数</label>
+                </div>
+                <div class="flex items-center">
+                  <input type="checkbox" id="content-5" class="mr-2">
+                  <label for="content-5">空气质量</label>
+                </div>
+              </div>
+            </div>
+            
+            <button id="save-weather-settings" class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+              保存设置
+            </button>
+          </div>
+          
+          <div>
+            <h3 class="text-xl font-bold mb-4">预览</h3>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center">
+                  <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/cb05a0dbc0194a91bc295ea99cace187~tplv-a9rns2rl98-image.image?rcl=202511181647376671A82AB74E4BE87970&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766047694&x-signature=Cp9oXDmEbKiqJW1X3W7ONuGbTkA%3D" alt="天气图标" class="weather-icon mr-4">
+                  <div>
+                    <h4 class="font-bold text-lg">北京</h4>
+                    <p class="text-gray-600">今天 25°C / 18°C</p>
+                  </div>
+                </div>
+                <span class="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full text-sm">晴天</span>
+              </div>
+              
+              <div class="border-t border-gray-200 pt-4 mb-4">
+                <p class="text-gray-700 mb-2">亲爱的，今天天气晴朗，温度适宜，是个约会的好日子哦~</p>
+                <p class="text-gray-700">建议穿轻便的衣服，别忘了涂防晒霜，保持好心情！</p>
+              </div>
+              
+              <div class="flex justify-between items-center text-sm text-gray-500">
+                <span>发送时间: 每天 07:30</span>
+                <span class="text-primary">
+                  <i class="fa fa-heart"></i> 爱的提醒
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-8">
+              <h3 class="text-xl font-bold mb-4">历史记录</h3>
+              <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 max-h-64 overflow-y-auto custom-scrollbar">
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold">亲爱的</span>
+                    <span class="text-gray-500 text-sm">今天 07:30</span>
+                  </div>
+                  <p class="text-gray-700">北京，晴天，25°C / 18°C</p>
+                </div>
+                
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold">亲爱的</span>
+                    <span class="text-gray-500 text-sm">昨天 07:30</span>
+                  </div>
+                  <p class="text-gray-700">北京，多云，23°C / 17°C</p>
+                </div>
+                
+                <div>
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold">亲爱的</span>
+                    <span class="text-gray-500 text-sm">前天 07:30</span>
+                  </div>
+                  <p class="text-gray-700">北京，小雨，20°C / 16°C</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">温馨提示模板</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
+            <h3 class="font-bold text-lg mb-3 flex items-center">
+              <i class="fa fa-heart text-primary mr-2"></i> 甜蜜型
+            </h3>
+            <p class="text-gray-700 mb-4">亲爱的，今天天气晴朗，就像我对你的爱一样炽热~ 记得保持好心情，我爱你！</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">适用：晴天、多云</span>
+              <button class="text-primary hover:underline">使用</button>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
+            <h3 class="font-bold text-lg mb-3 flex items-center">
+              <i class="fa fa-coffee text-secondary mr-2"></i> 关怀型
+            </h3>
+            <p class="text-gray-700 mb-4">宝贝，今天有点冷，记得多穿点衣服，别感冒了。晚上早点休息，做个好梦~</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">适用：寒冷、雨天</span>
+              <button class="text-primary hover:underline">使用</button>
+            </div>
+          </div>
+          
+          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
+            <h3 class="font-bold text-lg mb-3 flex items-center">
+              <i class="fa fa-star text-tertiary mr-2"></i> 幽默型
+            </h3>
+            <p class="text-gray-700 mb-4">嘿，今天天气不错，适合约会哦！要不要考虑一下和我共进晚餐？我请客，你买单~</p>
+            <div class="flex justify-between items-center">
+              <span class="text-sm text-gray-500">适用：任何天气</span>
+              <button class="text-primary hover:underline">使用</button>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8">
+          <button id="create-custom-template" class="flex items-center justify-center w-full bg-white border border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all-300">
+            <i class="fa fa-plus mr-2"></i> 创建自定义模板
+          </button>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 生日祝福 -->
+    <section id="birthday" class="tab-content">
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">生日祝福设置</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">联系人信息</h3>
+            
+            <div class="mb-6">
+              <label for="contact-name" class="block text-gray-700 mb-2">联系人姓名</label>
+              <input type="text" id="contact-name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入联系人姓名">
+            </div>
+            
+            <div class="mb-6">
+              <label for="birthday-date" class="block text-gray-700 mb-2">生日日期</label>
+              <input type="date" id="birthday-date" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+            </div>
+            
+            <div class="mb-6">
+              <label for="birthday-relation" class="block text-gray-700 mb-2">关系</label>
+              <select id="birthday-relation" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                <option value="">请选择关系</option>
+                <option value="lover">恋人</option>
+                <option value="spouse">配偶</option>
+                <option value="friend">朋友</option>
+                <option value="family">家人</option>
+              </select>
+            </div>
+            
+            <div class="mb-6">
+              <label for="birthday-wechat" class="block text-gray-700 mb-2">微信号</label>
+              <input type="text" id="birthday-wechat" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入微信号">
+            </div>
+            
+            <div class="mb-6">
+              <label class="block text-gray-700 mb-2">提醒时间</label>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <select id="remind-day" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                    <option value="0">生日当天</option>
+                    <option value="1">提前1天</option>
+                    <option value="3">提前3天</option>
+                    <option value="7">提前1周</option>
+                  </select>
+                </div>
+                <div>
+                  <input type="time" id="remind-time" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                </div>
+              </div>
+            </div>
+            
+            <button id="save-birthday-settings" class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+              保存设置
+            </button>
+          </div>
+          
+          <div>
+            <h3 class="text-xl font-bold mb-4">预览</h3>
+            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+              <div class="flex justify-center mb-6">
+                <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/96ba096d2cdf49888a4f44c2b362e788~tplv-a9rns2rl98-image.image?rcl=202511181647376671A82AB74E4BE87970&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1766047690&x-signature=o7f0JSqC7PuvjQVwCo7FJ3sG9Ak%3D" alt="生日祝福" class="w-32 h-32 object-contain">
+              </div>
+              
+              <div class="text-center mb-6">
+                <h4 class="font-bold text-xl mb-2">亲爱的，生日快乐！</h4>
+                <p class="text-gray-700">
+                  今天是你的生日，愿所有的幸福都围绕着你，所有的快乐都陪伴着你。<br>
+                  我爱你，胜过一切言语。愿我们的爱情永远甜蜜如初。
+                </p>
+              </div>
+              
+              <div class="flex justify-between items-center text-sm text-gray-500">
+                <span>发送时间: 生日当天 00:00</span>
+                <span class="text-primary">
+                  <i class="fa fa-heart"></i> 爱的祝福
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-8">
+              <h3 class="text-xl font-bold mb-4">已添加的生日</h3>
+              <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 max-h-64 overflow-y-auto custom-scrollbar">
+                <div class="border-b border-gray-200 pb-4 mb-4">
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold">亲爱的</span>
