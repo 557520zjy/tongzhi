@@ -614,6 +614,34 @@
       // 保存生日祝福设置  
       // document.getElementById('save-birthday-settings').addEventListener('click', saveBirthdaySettings);
       
+      // 添加联系人按钮
+      document.getElementById('add-contact')?.addEventListener('click', function() {
+        const contactName = prompt('请输入联系人姓名：');
+        if (contactName && contactName.trim()) {
+          const contactItem = document.createElement('div');
+          contactItem.className = 'contact-item flex items-center bg-gray-100 px-4 py-2 rounded-full cursor-pointer';
+          contactItem.innerHTML = `
+            <input type="checkbox" class="mr-2" checked>
+            <label>${contactName.trim()}</label>
+          `;
+          
+          const addButton = document.getElementById('add-contact');
+          addButton.parentNode.insertBefore(contactItem, addButton);
+        }
+      });
+      
+      // 搜索城市按钮
+      document.getElementById('search-city')?.addEventListener('click', function() {
+        const cityInput = document.getElementById('city');
+        const city = cityInput.value.trim();
+        if (city) {
+          alert(`正在搜索 "${city}" 的天气信息...`);
+          // 这里可以添加实际的天气搜索逻辑
+        } else {
+          alert('请先输入城市名称');
+        }
+      });
+      
       // ===== 微信分享功能整合 =====
       
       // 方案1: Web Share API（移动端原生分享）
@@ -912,6 +940,101 @@
           alert('设置已重置！');
         }
       });
+      
+      // 天气提醒保存设置函数
+      function saveWeatherSettings() {
+        try {
+          const city = document.getElementById('city').value;
+          const sendTime = document.getElementById('send-time').value;
+          const contentCheckboxes = document.querySelectorAll('#weather input[type="checkbox"]:checked');
+          const selectedContent = Array.from(contentCheckboxes).map(cb => cb.nextElementSibling.textContent);
+          
+          if (!city || !sendTime) {
+            alert('请填写完整的城市名称和发送时间！');
+            return;
+          }
+          
+          const weatherSettings = {
+            city: city,
+            sendTime: sendTime,
+            selectedContent: selectedContent,
+            timestamp: new Date().toISOString()
+          };
+          
+          localStorage.setItem('weatherSettings', JSON.stringify(weatherSettings));
+          alert('天气提醒设置已保存成功！');
+          
+          // 更新预览
+          updateWeatherPreview();
+        } catch (error) {
+          console.error('保存天气设置失败:', error);
+          alert('保存失败，请重试！');
+        }
+      }
+      
+      // 生日祝福保存设置函数
+      function saveBirthdaySettings() {
+        try {
+          const contactName = document.getElementById('contact-name').value;
+          const birthdayDate = document.getElementById('birthday-date').value;
+          const relation = document.getElementById('birthday-relation').value;
+          const wechatId = document.getElementById('birthday-wechat').value;
+          const remindDay = document.getElementById('remind-day').value;
+          const remindTime = document.getElementById('remind-time').value;
+          
+          if (!contactName || !birthdayDate) {
+            alert('请填写完整的联系人姓名和生日日期！');
+            return;
+          }
+          
+          const birthdaySettings = {
+            contactName: contactName,
+            birthdayDate: birthdayDate,
+            relation: relation,
+            wechatId: wechatId,
+            remindDay: remindDay,
+            remindTime: remindTime,
+            timestamp: new Date().toISOString()
+          };
+          
+          localStorage.setItem('birthdaySettings', JSON.stringify(birthdaySettings));
+          alert('生日祝福设置已保存成功！');
+          
+          // 更新预览
+          updateBirthdayPreview();
+        } catch (error) {
+          console.error('保存生日设置失败:', error);
+          alert('保存失败，请重试！');
+        }
+      }
+      
+      // 更新天气预览
+      function updateWeatherPreview() {
+        try {
+          const savedSettings = localStorage.getItem('weatherSettings');
+          if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            // 这里可以更新预览区域的显示内容
+            console.log('天气预览已更新:', settings);
+          }
+        } catch (error) {
+          console.error('更新天气预览失败:', error);
+        }
+      }
+      
+      // 更新生日预览
+      function updateBirthdayPreview() {
+        try {
+          const savedSettings = localStorage.getItem('birthdaySettings');
+          if (savedSettings) {
+            const settings = JSON.parse(savedSettings);
+            // 这里可以更新预览区域的显示内容
+            console.log('生日预览已更新:', settings);
+          }
+        } catch (error) {
+          console.error('更新生日预览失败:', error);
+        }
+      }
       
       // 加载保存的设置
       const savedSettings = localStorage.getItem('loveSettings');
