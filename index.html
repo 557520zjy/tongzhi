@@ -607,14 +607,12 @@
         });
       });
       
-      // 保存设置功能
-      document.getElementById('save-weather-settings')?.addEventListener('click', function() {
-        alert('天气提醒设置已保存！');
-      });
-      
-      document.getElementById('save-birthday-settings')?.addEventListener('click', function() {
-        alert('生日祝福设置已保存！');
-      });
+      // 保存设置功能 - 移除重复绑定
+      // 这些功能已经在后面定义，避免重复绑定
+      // 保存天气提醒设置
+      // document.getElementById('save-weather-settings').addEventListener('click', saveWeatherSettings);
+      // 保存生日祝福设置  
+      // document.getElementById('save-birthday-settings').addEventListener('click', saveBirthdaySettings);
       
       // ===== 微信分享功能整合 =====
       
@@ -722,15 +720,8 @@
         }
       });
       
-      // 天气提醒发送到微信
-      document.getElementById('send-wechat-weather')?.addEventListener('click', function() {
-        const city = document.getElementById('city').value || '北京';
-        const partnerName = document.getElementById('partner-name').value || '亲爱的';
-        const weatherInfo = `${city}今天天气晴朗，温度适宜，是个约会的好日子哦~`;
-        const message = `亲爱的${partnerName}，${weatherInfo} 记得注意保暖，保持好心情！❤️`;
-        
-        shareToWeChat(message);
-      });
+      // 天气提醒发送到微信 - 移除重复绑定
+      // 这个功能已经在后面定义，避免重复绑定
       
       // 设置页面分享到微信
       document.getElementById('share-wechat')?.addEventListener('click', function() {
@@ -940,281 +931,327 @@
       }
     });
   </script>
-</body>
-</html>
-    
-    <!-- 天气提醒 -->
-    <section id="weather" class="tab-content">
-      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">天气提醒设置</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h3 class="text-xl font-bold mb-4">选择城市</h3>
-            <div class="mb-6">
-              <label for="city" class="block text-gray-700 mb-2">城市名称</label>
-              <div class="relative">
-                <input type="text" id="city" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入城市名称">
-                <button id="search-city" class="absolute right-3 top-3 text-primary">
-                  <i class="fa fa-search"></i>
-                </button>
-              </div>
-            </div>
-            
-            <div class="mb-6">
-              <label class="block text-gray-700 mb-2">选择联系人</label>
-              <div class="flex flex-wrap gap-3">
-                <div class="contact-item flex items-center bg-primary bg-opacity-10 px-4 py-2 rounded-full cursor-pointer">
-                  <input type="checkbox" id="contact-1" class="mr-2">
-                  <label for="contact-1">亲爱的</label>
-                </div>
-                <div class="contact-item flex items-center bg-gray-100 px-4 py-2 rounded-full cursor-pointer">
-                  <input type="checkbox" id="contact-2" class="mr-2">
-                  <label for="contact-2">宝贝</label>
-                </div>
-                <button id="add-contact" class="flex items-center bg-gray-100 px-4 py-2 rounded-full cursor-pointer hover:bg-gray-200 transition-all-300">
-                  <i class="fa fa-plus mr-2"></i> 添加
-                </button>
-              </div>
-            </div>
-            
-            <div class="mb-6">
-              <label for="send-time" class="block text-gray-700 mb-2">发送时间</label>
-              <input type="time" id="send-time" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-            </div>
-            
-            <div class="mb-6">
-              <label class="block text-gray-700 mb-2">提醒内容</label>
-              <div class="space-y-3">
-                <div class="flex items-center">
-                  <input type="checkbox" id="content-1" class="mr-2" checked>
-                  <label for="content-1">温度</label>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="content-2" class="mr-2" checked>
-                  <label for="content-2">天气状况</label>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="content-3" class="mr-2" checked>
-                  <label for="content-3">穿衣建议</label>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="content-4" class="mr-2">
-                  <label for="content-4">紫外线指数</label>
-                </div>
-                <div class="flex items-center">
-                  <input type="checkbox" id="content-5" class="mr-2">
-                  <label for="content-5">空气质量</label>
-                </div>
-              </div>
-            </div>
-            
-            <button id="save-weather-settings" class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
-              保存设置
-            </button>
-            
-            <button id="generate-qr-weather" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300 mt-2">
-              <i class="fa fa-qrcode mr-2"></i>生成分享二维码
-            </button>
-            
-            <div id="qr-code-weather" class="mt-4 text-center hidden">
-              <p class="text-sm text-gray-600 mb-2">扫码分享到微信</p>
-              <div id="weather-qr" class="mx-auto"></div>
-            </div>
-            
-            <button id="send-wechat-weather" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300 mt-4">
-              <i class="fa fa-wechat mr-2"></i>发送到微信
-            </button>
-          </div>
-          
-          <div>
-            <h3 class="text-xl font-bold mb-4">预览</h3>
-            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center">
-                  <i class="fa fa-sun-o text-4xl text-yellow-400 mr-4"></i>
-                  <div>
-                    <h4 class="font-bold text-lg">北京</h4>
-                    <p class="text-gray-600">今天 25°C / 18°C</p>
-                  </div>
-                </div>
-                <span class="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full text-sm">晴天</span>
-              </div>
-              
-              <div class="border-t border-gray-200 pt-4 mb-4">
-                <p class="text-gray-700 mb-2">亲爱的，今天天气晴朗，温度适宜，是个约会的好日子哦~</p>
-                <p class="text-gray-700">建议穿轻便的衣服，别忘了涂防晒霜，保持好心情！</p>
-              </div>
-              
-              <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>发送时间: 每天 07:30</span>
-                <span class="text-primary">
-                  <i class="fa fa-heart"></i> 爱的提醒
-                </span>
-              </div>
-            </div>
-            
-            <div class="mt-8">
-              <h3 class="text-xl font-bold mb-4">历史记录</h3>
-              <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 max-h-64 overflow-y-auto custom-scrollbar">
-                <div class="border-b border-gray-200 pb-4 mb-4">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="font-bold">亲爱的</span>
-                    <span class="text-gray-500 text-sm">今天 07:30</span>
-                  </div>
-                  <p class="text-gray-700">北京，晴天，25°C / 18°C</p>
-                </div>
-                
-                <div class="border-b border-gray-200 pb-4 mb-4">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="font-bold">亲爱的</span>
-                    <span class="text-gray-500 text-sm">昨天 07:30</span>
-                  </div>
-                  <p class="text-gray-700">北京，多云，23°C / 17°C</p>
-                </div>
-                
-                <div>
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="font-bold">亲爱的</span>
-                    <span class="text-gray-500 text-sm">前天 07:30</span>
-                  </div>
-                  <p class="text-gray-700">北京，小雨，20°C / 16°C</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+  
+  <!-- 访问统计功能 -->
+  <script>
+    // VisitTracker 类定义
+    class VisitTracker {
+      constructor() {
+        this.visits = this.loadVisits();
+        this.recordVisit();
+      }
       
-      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8">
-        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">温馨提示模板</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
-            <h3 class="font-bold text-lg mb-3 flex items-center">
-              <i class="fa fa-heart text-primary mr-2"></i> 甜蜜型
-            </h3>
-            <p class="text-gray-700 mb-4">亲爱的，今天天气晴朗，就像我对你的爱一样炽热~ 记得保持好心情，我爱你！</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500">适用：晴天、多云</span>
-              <button class="text-primary hover:underline">使用</button>
-            </div>
-          </div>
+      loadVisits() {
+        try {
+          const saved = localStorage.getItem('visitStats');
+          return saved ? JSON.parse(saved) : {
+            totalVisits: 0,
+            visits: [],
+            uniqueVisitors: new Set()
+          };
+        } catch (error) {
+          console.error('加载访问数据失败:', error);
+          return { totalVisits: 0, visits: [], uniqueVisitors: new Set() };
+        }
+      }
+      
+      recordVisit() {
+        try {
+          const now = new Date();
+          const visitData = {
+            timestamp: now.getTime(),
+            date: now.toLocaleDateString(),
+            time: now.toLocaleTimeString(),
+            userAgent: navigator.userAgent.substring(0, 100)
+          };
           
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
-            <h3 class="font-bold text-lg mb-3 flex items-center">
-              <i class="fa fa-coffee text-secondary mr-2"></i> 关怀型
-            </h3>
-            <p class="text-gray-700 mb-4">宝贝，今天有点冷，记得多穿点衣服，别感冒了。晚上早点休息，做个好梦~</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500">适用：寒冷、雨天</span>
-              <button class="text-primary hover:underline">使用</button>
-            </div>
-          </div>
+          this.visits.totalVisits++;
+          this.visits.visits.push(visitData);
           
-          <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 transform hover:scale-105 transition-all-300 cursor-pointer">
-            <h3 class="font-bold text-lg mb-3 flex items-center">
-              <i class="fa fa-star text-tertiary mr-2"></i> 幽默型
-            </h3>
-            <p class="text-gray-700 mb-4">嘿，今天天气不错，适合约会哦！要不要考虑一下和我共进晚餐？我请客，你买单~</p>
-            <div class="flex justify-between items-center">
-              <span class="text-sm text-gray-500">适用：任何天气</span>
-              <button class="text-primary hover:underline">使用</button>
-            </div>
-          </div>
-        </div>
+          // 保持最近100条记录
+          if (this.visits.visits.length > 100) {
+            this.visits.visits = this.visits.visits.slice(-100);
+          }
+          
+          this.saveVisits();
+          this.showVisitNotification();
+        } catch (error) {
+          console.error('记录访问失败:', error);
+        }
+      }
+      
+      saveVisits() {
+        try {
+          localStorage.setItem('visitStats', JSON.stringify(this.visits));
+        } catch (error) {
+          console.error('保存访问数据失败:', error);
+        }
+      }
+      
+      getTodayVisits() {
+        const today = new Date().toLocaleDateString();
+        return this.visits.visits.filter(v => v.date === today).length;
+      }
+      
+      getUniqueVisitors() {
+        return new Set(this.visits.visits.map(v => v.userAgent)).size;
+      }
+      
+      getRecentVisits(days = 7) {
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - days);
+        return this.visits.visits.filter(v => new Date(v.timestamp) > cutoff);
+      }
+      
+      clearAll() {
+        if (confirm('确定要清空所有访问数据吗？')) {
+          this.visits = { totalVisits: 0, visits: [], uniqueVisitors: new Set() };
+          this.saveVisits();
+          return true;
+        }
+        return false;
+      }
+      
+      exportData() {
+        return JSON.stringify(this.visits, null, 2);
+      }
+      
+      showVisitNotification() {
+        try {
+          const todayVisits = this.getTodayVisits();
+          if (todayVisits === 1) {
+            this.showNotification('🎉 欢迎首次访问！', '感谢使用爱的天气提醒应用');
+          } else {
+            this.showNotification(`🌟 欢迎回来！`, '今天是您第' + todayVisits + '次访问');
+          }
+        } catch (error) {
+          console.error('显示访问通知失败:', error);
+        }
+      }
+      
+      showNotification(title, message) {
+        // 创建通知元素
+        const notification = document.createElement('div');
+        notification.className = 'fixed top-4 right-4 bg-primary text-white px-4 py-3 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+        notification.innerHTML = `
+          <div class="font-bold">${title}</div>
+          <div class="text-sm">${message}</div>
+        `;
         
-        <div class="mt-8">
-          <button id="create-custom-template" class="flex items-center justify-center w-full bg-white border border-primary text-primary hover:bg-primary hover:text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-all-300">
-            <i class="fa fa-plus mr-2"></i> 创建自定义模板
+        document.body.appendChild(notification);
+        
+        // 显示动画
+        setTimeout(() => {
+          notification.classList.remove('translate-x-full');
+        }, 100);
+        
+        // 自动隐藏
+        setTimeout(() => {
+          notification.classList.add('translate-x-full');
+          setTimeout(() => {
+            if (document.body.contains(notification)) {
+              document.body.removeChild(notification);
+            }
+          }, 300);
+        }, 3000);
+      }
+    }
+    
+    // 显示访问统计
+    function showVisitStats() {
+      try {
+        if (!window.visitTracker) {
+          alert('访问统计功能初始化失败，请刷新页面重试');
+          return;
+        }
+        
+        const modal = document.getElementById('visit-stats-modal');
+        if (!modal) {
+          console.error('访问统计弹窗元素未找到');
+          return;
+        }
+        
+        // 更新统计数据
+        document.getElementById('total-visits').textContent = window.visitTracker.visits.totalVisits;
+        document.getElementById('today-visits').textContent = window.visitTracker.getTodayVisits();
+        document.getElementById('unique-visitors').textContent = window.visitTracker.getUniqueVisitors();
+        
+        // 更新最近访问
+        const recentVisits = window.visitTracker.getRecentVisits(7);
+        const recentContainer = document.getElementById('recent-visits');
+        
+        if (recentVisits.length > 0) {
+          recentContainer.innerHTML = recentVisits.slice(-5).reverse().map(visit => `
+            <div class="flex justify-between items-center py-2 border-b border-gray-100 last:border-b-0">
+              <span class="text-sm">${visit.date} ${visit.time}</span>
+              <span class="text-xs text-gray-500">${visit.userAgent.substring(0, 30)}...</span>
+            </div>
+          `).join('');
+        } else {
+          recentContainer.innerHTML = '<p class="text-gray-500 text-center py-4">暂无最近访问记录</p>';
+        }
+        
+        // 显示弹窗
+        modal.classList.remove('hidden');
+      } catch (error) {
+        console.error('显示访问统计失败:', error);
+        alert('显示访问统计失败，请查看控制台了解详情');
+      }
+    }
+    
+    // 初始化访问统计
+    try {
+      window.visitTracker = new VisitTracker();
+      window.pageInitialized = true;
+      console.log('页面初始化完成');
+    } catch (error) {
+      console.error('访问统计初始化失败:', error);
+      window.pageInitialized = false;
+    }
+    
+    // 全局错误处理
+    window.addEventListener('error', function(event) {
+      console.error('全局错误捕获:', event.error);
+      console.error('错误信息:', event.message);
+      console.error('错误文件:', event.filename);
+      console.error('错误行号:', event.lineno);
+      console.error('错误列号:', event.colno);
+    });
+    
+    window.addEventListener('unhandledrejection', function(event) {
+      console.error('未处理的Promise拒绝:', event.reason);
+    });
+  </script>
+  
+  <!-- 访问统计弹窗 -->
+  <div id="visit-stats-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-96 overflow-hidden">
+      <div class="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-6">
+        <div class="flex justify-between items-center">
+          <h3 class="text-xl font-bold">访问统计</h3>
+          <button onclick="document.getElementById('visit-stats-modal').classList.add('hidden')" class="text-white hover:text-gray-200">
+            <i class="fa fa-times text-xl"></i>
           </button>
         </div>
       </div>
-    </section>
-    
-    <!-- 生日祝福 -->
-    <section id="birthday" class="tab-content">
-      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">生日祝福设置</h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div>
-            <h3 class="text-xl font-bold mb-4">联系人信息</h3>
-            
-            <div class="mb-6">
-              <label for="contact-name" class="block text-gray-700 mb-2">联系人姓名</label>
-              <input type="text" id="contact-name" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入联系人姓名">
-            </div>
-            
-            <div class="mb-6">
-              <label for="birthday-date" class="block text-gray-700 mb-2">生日日期</label>
-              <input type="date" id="birthday-date" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-            </div>
-            
-            <div class="mb-6">
-              <label for="birthday-relation" class="block text-gray-700 mb-2">关系</label>
-              <select id="birthday-relation" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                <option value="">请选择关系</option>
-                <option value="lover">恋人</option>
-                <option value="spouse">配偶</option>
-                <option value="friend">朋友</option>
-                <option value="family">家人</option>
-              </select>
-            </div>
-            
-            <div class="mb-6">
-              <label for="birthday-wechat" class="block text-gray-700 mb-2">微信号</label>
-              <input type="text" id="birthday-wechat" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入微信号">
-            </div>
-            
-            <div class="mb-6">
-              <label class="block text-gray-700 mb-2">提醒时间</label>
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <select id="remind-day" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                    <option value="0">生日当天</option>
-                    <option value="1">提前1天</option>
-                    <option value="3">提前3天</option>
-                    <option value="7">提前1周</option>
-                  </select>
-                </div>
-                <div>
-                  <input type="time" id="remind-time" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
-                </div>
-              </div>
-            </div>
-            
-            <button id="save-birthday-settings" class="w-full bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-6 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
-              保存设置
-            </button>
+      <div class="p-6">
+        <div class="grid grid-cols-3 gap-4 mb-6">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-primary" id="total-visits">0</div>
+            <div class="text-sm text-gray-600">总访问量</div>
           </div>
-          
-          <div>
-            <h3 class="text-xl font-bold mb-4">预览</h3>
-            <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
-              <div class="flex justify-center mb-6">
-                <i class="fa fa-birthday-cake text-6xl text-primary"></i>
-              </div>
-              
-              <div class="text-center mb-6">
-                <h4 class="font-bold text-xl mb-2">亲爱的，生日快乐！</h4>
-                <p class="text-gray-700">
-                  今天是你的生日，愿所有的幸福都围绕着你，所有的快乐都陪伴着你。<br>
-                  我爱你，胜过一切言语。愿我们的爱情永远甜蜜如初。
-                </p>
-              </div>
-              
-              <div class="flex justify-between items-center text-sm text-gray-500">
-                <span>发送时间: 生日当天 00:00</span>
-                <span class="text-primary">
-                  <i class="fa fa-heart"></i> 爱的祝福
-                </span>
-              </div>
-            </div>
-            
-            <div class="mt-8">
-              <h3 class="text-xl font-bold mb-4">已添加的生日</h3>
-              <div class="bg-gray-50 rounded-xl p-6 border border-gray-200 max-h-64 overflow-y-auto custom-scrollbar">
-                <div class="border-b border-gray-200 pb-4 mb-4">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="font-bold">亲爱的</span>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-secondary" id="today-visits">0</div>
+            <div class="text-sm text-gray-600">今日访问</div>
+          </div>
+          <div class="text-center">
+            <div class="text-2xl font-bold text-tertiary" id="unique-visitors">0</div>
+            <div class="text-sm text-gray-600">独立访客</div>
+          </div>
+        </div>
+        <div class="mb-4">
+          <h4 class="font-bold mb-2">最近访问</h4>
+          <div id="recent-visits" class="text-sm text-gray-600 max-h-32 overflow-y-auto">
+            <p>暂无访问记录</p>
+          </div>
+        </div>
+        <div class="flex space-x-4">
+          <button id="export-visits" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg text-sm transition-colors-300">
+            <i class="fa fa-download mr-1"></i> 导出数据
+          </button>
+          <button id="clear-visits" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg text-sm transition-colors-300">
+            <i class="fa fa-trash mr-1"></i> 清空数据
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 移动菜单功能 -->
+  <script>
+    // 移动菜单功能
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileMenuButton = document.getElementById('mobile-menu-button');
+      const mobileMenu = document.getElementById('mobile-menu');
+      
+      if (mobileMenuButton && mobileMenu) {
+        mobileMenuButton.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+        });
+        
+        // 移动端导航链接点击后关闭菜单
+        const mobileNavLinks = mobileMenu.querySelectorAll('.nav-link');
+        mobileNavLinks.forEach(link => {
+          link.addEventListener('click', function() {
+            mobileMenu.classList.add('hidden');
+          });
+        });
+      }
+      
+      // 访问统计按钮事件
+      const viewVisitsBtn = document.getElementById('view-visits');
+      const viewVisitsMobileBtn = document.getElementById('view-visits-mobile');
+      
+      if (viewVisitsBtn) {
+        viewVisitsBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (window.showVisitStats) {
+            showVisitStats();
+          } else {
+            alert('访问统计功能正在加载中，请稍后再试');
+          }
+        });
+      }
+      
+      if (viewVisitsMobileBtn) {
+        viewVisitsMobileBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (window.showVisitStats) {
+            showVisitStats();
+          } else {
+            alert('访问统计功能正在加载中，请稍后再试');
+          }
+        });
+      }
+      
+      // 访问统计弹窗按钮事件
+      const exportBtn = document.getElementById('export-visits');
+      const clearBtn = document.getElementById('clear-visits');
+      
+      if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+          try {
+            if (window.visitTracker) {
+              const data = window.visitTracker.exportData();
+              const blob = new Blob([data], { type: 'application/json' });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `visit-stats-${new Date().toISOString().split('T')[0]}.json`;
+              a.click();
+              URL.revokeObjectURL(url);
+            }
+          } catch (error) {
+            console.error('导出访问数据失败:', error);
+            alert('导出失败，请查看控制台了解详情');
+          }
+        });
+      }
+      
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          try {
+            if (window.visitTracker && window.visitTracker.clearAll()) {
+              // 更新显示
+              showVisitStats();
+            }
+          } catch (error) {
+            console.error('清空访问数据失败:', error);
+            alert('清空失败，请查看控制台了解详情');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
