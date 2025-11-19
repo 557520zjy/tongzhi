@@ -393,6 +393,157 @@
       </div>
     </section>
     
+    <!-- 天气提醒 -->
+    <section id="weather" class="tab-content">
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">天气提醒</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">天气设置</h3>
+            <div class="space-y-4">
+              <div>
+                <label for="city" class="block text-gray-700 mb-2">城市选择</label>
+                <div class="flex gap-2">
+                  <input type="text" id="city" class="flex-1 px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="输入城市名称">
+                  <button id="search-city" class="bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-4 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+                    <i class="fa fa-search"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div>
+                <label for="weather-time" class="block text-gray-700 mb-2">提醒时间</label>
+                <input type="time" id="weather-time" value="08:00" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              </div>
+              
+              <div>
+                <label class="block text-gray-700 mb-2">提醒频率</label>
+                <select class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <option value="daily">每日提醒</option>
+                  <option value="workdays">工作日提醒</option>
+                  <option value="weekends">周末提醒</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-xl font-bold mb-4">天气预览</h3>
+            <div class="bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl p-6 text-white mb-4">
+              <div class="flex items-center justify-between mb-4">
+                <h4 class="text-lg font-bold">北京今日天气</h4>
+                <i class="fa fa-sun text-3xl"></i>
+              </div>
+              <div class="text-2xl font-bold mb-2">25°C</div>
+              <div class="text-sm opacity-90">晴朗 · 适宜出行</div>
+              <div class="text-sm mt-2">湿度: 45% · 风速: 3级</div>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-4">
+              <h4 class="font-bold mb-2">温馨提示</h4>
+              <p class="text-sm text-gray-700">今天天气不错，适合和TA一起出去走走，记得提醒TA注意防晒哦~</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-center space-x-4">
+          <button id="save-weather-settings" class="bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+            保存设置
+          </button>
+          <button id="generate-qr-weather" class="bg-secondary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+            生成二维码
+          </button>
+        </div>
+        
+        <div id="qr-code-weather" class="hidden mt-6 text-center">
+          <h4 class="font-bold mb-2">扫码分享到微信</h4>
+          <div id="weather-qr" class="mx-auto"></div>
+        </div>
+      </div>
+    </section>
+    
+    <!-- 生日祝福 -->
+    <section id="birthday" class="tab-content">
+      <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold mb-6 text-center">生日祝福</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div>
+            <h3 class="text-xl font-bold mb-4">生日设置</h3>
+            <div class="space-y-4">
+              <div>
+                <label for="my-birthday" class="block text-gray-700 mb-2">我的生日</label>
+                <input type="date" id="my-birthday" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              </div>
+              
+              <div>
+                <label for="partner-birthday" class="block text-gray-700 mb-2">对方生日</label>
+                <input type="date" id="partner-birthday" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+              </div>
+              
+              <div>
+                <label for="birthday-reminder-days" class="block text-gray-700 mb-2">提前提醒天数</label>
+                <select id="birthday-reminder-days" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <option value="7">7天前</option>
+                  <option value="3">3天前</option>
+                  <option value="1">1天前</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <div>
+            <h3 class="text-xl font-bold mb-4">祝福模板</h3>
+            <div class="space-y-4">
+              <div>
+                <label for="birthday-template" class="block text-gray-700 mb-2">选择模板</label>
+                <select id="birthday-template" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent">
+                  <option value="romantic">浪漫温馨</option>
+                  <option value="cute">可爱俏皮</option>
+                  <option value="simple">简洁真挚</option>
+                  <option value="custom">自定义</option>
+                </select>
+              </div>
+              
+              <div>
+                <label for="birthday-message" class="block text-gray-700 mb-2">祝福内容</label>
+                <textarea id="birthday-message" rows="4" class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent" placeholder="亲爱的，生日快乐！愿你每天都开开心心，我会一直陪在你身边~">亲爱的，生日快乐！愿你每天都开开心心，我会一直陪在你身边~</textarea>
+              </div>
+              
+              <div>
+                <label class="flex items-center">
+                  <input type="checkbox" class="mr-2" checked>
+                  <span class="text-gray-700">自动发送祝福</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="mt-8 flex justify-center space-x-4">
+          <button id="save-birthday-settings" class="bg-primary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+            保存设置
+          </button>
+          <button id="preview-birthday" class="bg-secondary hover:bg-opacity-90 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+            预览效果
+          </button>
+        </div>
+        
+        <div class="mt-6 bg-pink-50 rounded-xl p-4">
+          <h4 class="font-bold text-pink-800 mb-2">🎂 生日祝福预览</h4>
+          <div class="bg-white rounded-lg p-4 border border-pink-200">
+            <div class="text-center">
+              <div class="text-2xl mb-2">🎉🎂🎈</div>
+              <div class="font-bold text-lg mb-2">亲爱的，生日快乐！</div>
+              <div class="text-gray-700">愿你每天都开开心心，我会一直陪在你身边~</div>
+              <div class="text-sm text-gray-500 mt-2">爱你的宝贝 💕</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <!-- 情感指数 -->
     <section id="emotion" class="tab-content">
       <div class="bg-white bg-opacity-80 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-12">
@@ -558,6 +709,14 @@
           <button id="reset-settings" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
             重置设置
           </button>
+          <button id="generate-qr-birthday" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg shadow-lg transform hover:scale-105 transition-all-300">
+            生成二维码
+          </button>
+        </div>
+        
+        <div id="qr-code-birthday" class="hidden mt-6 text-center">
+          <h4 class="font-bold mb-2">扫码分享到微信</h4>
+          <div id="birthday-qr" class="mx-auto"></div>
         </div>
         
         <div class="mt-6 text-center">
@@ -641,6 +800,57 @@
           // 这里可以添加实际的天气搜索逻辑
         } else {
           alert('请先输入城市名称');
+        }
+      });
+      
+      // 天气提醒设置保存按钮
+      document.getElementById('save-weather-settings')?.addEventListener('click', function() {
+        const city = document.getElementById('city').value;
+        const weatherTime = document.getElementById('weather-time').value;
+        
+        if (!city) {
+          alert('请输入城市名称');
+          return;
+        }
+        
+        // 保存到本地存储
+        localStorage.setItem('weatherCity', city);
+        localStorage.setItem('weatherTime', weatherTime);
+        
+        alert('天气提醒设置已保存成功！');
+        console.log('天气提醒设置:', { city, weatherTime });
+      });
+      
+      // 生日祝福设置保存按钮
+      document.getElementById('save-birthday-settings')?.addEventListener('click', function() {
+        const myBirthday = document.getElementById('my-birthday').value;
+        const partnerBirthday = document.getElementById('partner-birthday').value;
+        const birthdayMessage = document.getElementById('birthday-message').value;
+        
+        if (!myBirthday || !partnerBirthday) {
+          alert('请填写完整的生日信息');
+          return;
+        }
+        
+        // 保存到本地存储
+        localStorage.setItem('myBirthday', myBirthday);
+        localStorage.setItem('partnerBirthday', partnerBirthday);
+        localStorage.setItem('birthdayMessage', birthdayMessage);
+        
+        alert('生日祝福设置已保存成功！');
+        console.log('生日祝福设置:', { myBirthday, partnerBirthday, birthdayMessage });
+      });
+      
+      // 生日祝福预览按钮
+      document.getElementById('preview-birthday')?.addEventListener('click', function() {
+        const message = document.getElementById('birthday-message').value;
+        const previewDiv = document.querySelector('#birthday .bg-white.rounded-lg');
+        if (previewDiv) {
+          previewDiv.querySelector('.text-gray-700').textContent = message;
+          previewDiv.style.animation = 'pulse 1s';
+          setTimeout(() => {
+            previewDiv.style.animation = '';
+          }, 1000);
         }
       });
       
@@ -745,6 +955,21 @@
         
         // 显示二维码区域
         const qrSection = document.getElementById('qr-code-weather');
+        if (qrSection) {
+          qrSection.classList.remove('hidden');
+        }
+      });
+      
+      // 生日祝福生成二维码
+      document.getElementById('generate-qr-birthday')?.addEventListener('click', function() {
+        const partnerName = document.getElementById('partner-name').value || '亲爱的';
+        const birthdayMessage = document.getElementById('birthday-message').value || '生日快乐！愿你每天都开开心心~';
+        const message = `亲爱的${partnerName}，${birthdayMessage} 🎂🎉💕`;
+        
+        generateQRCode('birthday-qr', message);
+        
+        // 显示二维码区域
+        const qrSection = document.getElementById('qr-code-birthday');
         if (qrSection) {
           qrSection.classList.remove('hidden');
         }
